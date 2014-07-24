@@ -1,2 +1,5 @@
 ---
 - include: iptables.yml
+- include: haproxyr.yml
+- include: nginx.yml
+- include: jetty.yml

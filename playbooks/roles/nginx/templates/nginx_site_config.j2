@@ -6,6 +6,106 @@ map $http_cookie $no_cache {
 }
 
 server {
+    listen 80;
+
+    server_name {{ item.server_name }};
+    root {{ www_root }};
+    client_max_body_size 100M;
+    gzip_static on;
+
+    {% if basic_auth_path -%}
+    auth_basic "Restricted";
+    auth_basic_user_file {{ basic_auth_path }};
+    {%- endif %}
+
+    {# Turn Sendfile off so that Vagrant/Virtualbox notices file changes in synced folders #}
+    {% if vagrant is defined %}
+    sendfile off;
+    {% endif %}
+
+    error_page 404 @not_found;
+
+    location @not_found {
+        root {{ www_root }};
+        set $not_found /static/404.fi.html;
+        if ( $request_uri ~* "/(fi|en|sv)/" ){
+            set $not_found /static/404.$1.html;
+        }
+
+        rewrite ^(.*)$ $not_found break;
+    }
+
+    error_page 500 @internal_error;
+
+    location @internal_error {
+        root {{ www_root }};
+        set $internal_error /static/500.fi.html;
+        if ( $request_uri ~* "/(fi|en|sv)/" ){
+            set $internal_error /static/500.$1.html;
+        }
+
+        rewrite ^(.*)$ $internal_error break;
+    }
+
+    location = /favicon.ico {
+        log_not_found off;
+        access_log off;
+    }
+
+    location = /robots.txt {
+        allow all;
+        log_not_found off;
+        access_log off;
+    }
+
+    location ~* \.(txt|log)$ {
+        allow 192.168.0.0/16;
+        deny all;
+    }
+
+    location ~ \..*/.*\.php$ {
+        return 403;
+    }
+
+    location ~ ^/sites/.*/private/ {
+        return 403;
+    }
+
+    location ~ (^|/)\. {
+        return 403;
+    }
+
+    # Common assets
+    location /resources {
+        root {{ www_root }};
+        autoindex off;
+        expires max;
+        log_not_found off;
+    }
+
+    # Static?
+    location /sample {
+        proxy_pass https://127.0.0.1:{{ app_port }}/sample;
+        proxy_set_header Host $host;
+        proxy_cache cache;
+        proxy_cache_bypass $no_cache;
+        proxy_no_cache $no_cache;
+        proxy_cache_valid 30m;
+        proxy_cache_key $host$scheme$proxy_host$request_uri;
+        proxy_intercept_errors on;
+        proxy_read_timeout 120s;
+        # In emergency comment out line to force caching
+        # proxy_ignore_headers X-Accel-Expires Expires Cache-Control;
+    }
+
+    location ~* ^(?!/data|/resources).*\.(js|css|png|jpg|jpeg|gif|ico)$ {
+        expires max;
+        log_not_found off;
+    }
+}
+
+{% if ssl -%}
+server {
     listen [::]:80;
     return 301 https://$host$request_uri;
 }
@@ -123,3 +223,5 @@ server {
         log_not_found off;
     }
 }
+{% endif %}
+

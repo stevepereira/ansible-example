@@ -1,12 +1,4 @@
 ---
-
-#TODO:
-  # common config bootstrap
-  # hardening
-  # role specific config
-  # deploy
-  # test
-
 - hosts:
     - loadbalancer
   sudo: yes
@@ -15,8 +7,7 @@
   pre_tasks:
 
   roles:
-    - role: common
-    - role: haproxy
+    - role: deploy
 
   post_tasks:
     - include: tests/main.yml
@@ -32,8 +23,7 @@
   pre_tasks:
 
   roles:
-    - role: common
-    - role: nginx
+    - role: deploy
 
   post_tasks:
     - include: tests/main.yml
@@ -49,8 +39,7 @@
   pre_tasks:
 
   roles:
-    - role: common
-    - role: jetty
+    - role: deploy
 
   post_tasks:
     - include: tests/main.yml

@@ -26,6 +26,7 @@ www_group: www-data
 certificates_path: "/data/shared/ssl"
 basic_auth_path: false
 
+ssl: false
 ssl_path: false
 ssl_crt_primary: server.crt
 ssl_crt_secondary: server.crt
@@ -35,3 +36,6 @@ ssl_key_secondary: server.key
 # App server config
 app_port: 8080
 java_home: /usr/lib/jvm/java-7-openjdk-amd64
+webapps_dir: /usr/share/jetty/webapps
+app_war: https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/sample.war
+app_name: sample

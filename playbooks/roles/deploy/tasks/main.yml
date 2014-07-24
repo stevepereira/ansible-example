@@ -1,0 +1,19 @@
+---
+
+- name: deploy | backup old warfile
+  command: mv "{{ webapps_dir }}/{{ app_name }}.war" "{{ webapps_dir }}/{{ app_name }}.backup" force=yes removes="{{ webapps_dir }}/{{ app_name }}.war"
+  tags:
+  - deploy
+
+- name: deploy | download warfile
+  get_url: url={{ app_war }} dest={{ webapps_dir }} creates="{{ webapps_dir }}/{{ app_name }}.war"
+  register: deploy
+  tags:
+  - deploy
+
+- name: deploy | ensure ownership
+  shell: chown {{ www_user }}:{{ www_group }} "{{ files_root }}" && chmod -R u+rwX,g+rwX,o-rwx "{{ files_root }}"
+  when: deploy|changed
+  notify: restart jetty
+  tags:
+  - deploy

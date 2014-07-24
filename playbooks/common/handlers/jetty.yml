@@ -1,0 +1,9 @@
+---
+- name: restart jetty
+  service: name=jetty state=restarted
+  sudo: true
+
+- wait_for: {{ app_port }}
+  register: deployed
+
+#TODO notify newrelic or something equivalent
