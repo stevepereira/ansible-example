@@ -1,0 +1,14 @@
+---
+- name: packages | update and ensure core packages are installed | deb
+  apt: pkg={{ item }} state=installed update_cache=yes cache_valid_time=3600
+  tags: install
+  sudo: true
+  with_items:
+    - ssh-import-id
+    - unzip
+    - curl
+    - atop
+    - vim
+    - git
+    - make
+  when: ansible_os_family == "Debian"

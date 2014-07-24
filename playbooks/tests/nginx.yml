@@ -1,0 +1,10 @@
+---
+- name: test jetty
+  hosts: jetty
+  remote_user: root
+
+  tasks:
+  - name: test | nginx is installed
+    shell: nginx -v
+    when: nginx_install is defined and nginx_install == "y"
+    tags: test

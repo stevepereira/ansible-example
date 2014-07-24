@@ -1,0 +1,21 @@
+- name: Update path
+  copy:
+    dest=/etc/profile.d/path.sh
+    content="export PATH=$PATH:/usr/local/bin"
+
+- name: Make path file executable
+  shell: chmod +x /etc/profile.d/path.sh
+
+- name: Upgrade openssl
+  yum: name={{ item }}
+  with_items:
+    - openssl
+    - openssl-devel
+  when: ansible_os_family == "RedHat"
+
+- name: Reload profile
+  shell: . /etc/profile
+
+- shell: echo $PATH 
+  register: p
+- debug: msg="Path is {{ p }}"
