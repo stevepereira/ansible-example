@@ -1,22 +1,17 @@
 ---
-- hosts: all
+- hosts:
+    - webserver
+    - appserver
   sudo: yes
   vars_files:
-    - ../settings.yml
+    - vars/common.yml
   pre_tasks:
 
   roles:
-    - role: base
-      when: base_install is defined and base_install == "y"
-
+    - role: common
     - role: haproxy
-      when: haproxy_install is defined and haproxy_install == "y"
-
     - role: nginx
-      when: nginx_install is defined and nginx_install == "y"
-
     - role: jetty
-      when: jetty_install is defined and jetty_install == "y"
 
   post_tasks:
     - include: tests/main.yml

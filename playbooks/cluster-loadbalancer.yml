@@ -1,0 +1,15 @@
+---
+
+- hosts: loadbalancer
+  sudo: true
+  vars_files:
+    - "vars/common.yml"
+    - ["vars/secrets/{{ secret_variables }}", "vars/none.yml"]
+    - ["vars/local.yml", "vars/none.yml"]
+  roles:
+    - common
+    - users
+    - firewall
+    - ssl
+    - clamav
+    - haproxy

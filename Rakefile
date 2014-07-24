@@ -10,14 +10,14 @@ end
 
 STDOUT.sync = true
 
-if not File.exists? "settings.yml"
-    config = read_yaml.('example.settings.yml')
-else
-    config = read_yaml.('settings.yml')
-end
+ansible_version = 1.6.3
+vagrant_version = 1.6.2
+virtualbox_version = 4.3.12-93733
 
 task :test do
-  puts "Vagrant: #{config['vagrant']['version']}"
+  puts “Ansible version: #{ansible_version}”
+  puts "Vagrant version: #{vagrant_version}”
+  puts "Virtualbox version: #{virtualbox_version}”
 end
 
 notify = 'terminal-notifier -message SUCCESS || terminal-notifier -message FAILED'
@@ -62,7 +62,7 @@ namespace :homebrew do
     if not File.exists? "/usr/local/bin/ansible"
       puts "+++ Installing Ansible"
       sh "brew install ansible"
-      sh "brew switch ansible #{config['ansible']['version']}"
+      sh "brew switch ansible #{ansible_version}"
     else
       puts "*** Ansible already installed, version:"
       sh "ansible --version"
@@ -74,7 +74,7 @@ namespace :homebrew do
     if not File.exists? "/usr/bin/VBoxManage"
       puts "+++ Installing Virtualbox"
       sh "brew cask install virtualbox"
-      sh "brew switch virtualbox #{config['virtualbox']['version']}"
+      sh "brew switch virtualbox #{virtualbox_version}"
     else
       puts "*** Virtualbox already installed, version:"
       sh "VBoxManage -v"
@@ -86,7 +86,7 @@ namespace :homebrew do
     if not File.exists? "/Applications/Vagrant/bin/vagrant"
       puts "+++ Installing Vagrant"
       sh "brew cask install vagrant"
-      sh "brew switch vagrant #{config['vagrant']['version']}"
+      sh "brew switch vagrant #{vagrant_version}”
     else
       puts "*** Vagrant already installed, version:"
       sh "vagrant -v"
@@ -112,14 +112,7 @@ end
 
 namespace :setup do
   Rake::Task["homebrew:install"].invoke
-  task :vagrant => [:settings, :vagrant_plugins, :vagrant_up, :vagrant_provision]
-
-  desc "copy settings example if settings missing"
-  task :settings do
-    if not File.exists? "settings.yml"
-      sh "cp example.settings.yml settings.yml"
-    end
-  end
+  task :vagrant => [:vagrant_plugins, :vagrant_up, :vagrant_provision]
 
   desc "vagrant plugins"
   task :vagrant_plugins do

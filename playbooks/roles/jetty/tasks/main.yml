@@ -1,0 +1,45 @@
+---
+
+- name: Ensure Jetty requirements
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - openjdk-7-jdk
+    - jetty
+    - libjetty-extra-java
+    - libcurl3
+    - curl
+    - libjs-jquery
+    - libcommons-fileupload-java
+    - libcommons-httpclient-java
+    - libcommons-io-java
+    - libcommons-lang-java
+    - libcommons-logging-java
+    - libgeronimo-stax-1.2-spec-java
+    - libguava-java
+    - libhttpclient-java
+    - libhttpmime-java
+    - libwoodstox-java
+  tags:
+  - jetty
+
+- name: Create debian cache path
+  file: path="{{ cache_path }}/debian" state=directory
+  tags:
+  - jetty
+
+- name: Setup Jetty
+  template: src=jetty.j2 dest=/etc/default/jetty mode=0644 owner=root group=root
+  register: jetty_setup
+  tags:
+  - jetty
+
+- name: Ensure Jetty is restarted
+  service: name=jetty state=restarted
+  when: jetty_setup|changed or fetch_schema|changed
+  tags:
+  - jetty
+
+- name: Ensure Jetty is running
+  service: name=jetty state=started enabled=true
+  tags:
+  - jetty

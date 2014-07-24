@@ -1,5 +1,5 @@
 ---
-- include: haproxy.yml
+#- include: haproxy.yml
 - include: nginx.yml
 - include: jetty.yml
 

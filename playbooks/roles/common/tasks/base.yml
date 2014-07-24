@@ -1,0 +1,48 @@
+- name: Update path
+  copy:
+    dest=/etc/profile.d/path.sh
+    content="export PATH=$PATH:/usr/local/bin"
+
+- name: Make path file executable
+  shell: chmod +x /etc/profile.d/path.sh
+
+- name: Reload profile
+  shell: . /etc/profile
+
+- shell: echo $PATH
+  register: path
+- debug: msg="Path is {{ path.stdout_lines }}"
+
+- name: Set hostname
+  template: src=hostname.j2 dest="/etc/hostname" mode=0644 owner=root group=root
+  register: hostname_update
+  tags:
+  - common
+  - non-local
+  - has-hostname
+
+- name: Update hostname
+  command: service hostname start
+  when: hostname_update|changed
+  tags:
+  - common
+  - non-local
+  - has-hostname
+
+- name: Copy environment
+  template: src=environment.j2 dest="/etc/environment" mode=0644 owner=root group=root
+  tags:
+  - common
+
+- name: Copy apt sources.list
+  template: src=sources.list.j2 dest=/etc/apt/sources.list mode=0644 owner=root group=root
+  when: apt_source_url != false
+  tags:
+  - packages
+  - common
+
+- name: Create common path
+  file: path=/data/shared/nfs state=directory recurse=yes
+  tags:
+  - common
+

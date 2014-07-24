@@ -1,0 +1,16 @@
+---
+
+- hosts: appserver
+  sudo: true
+  vars_files:
+    - "vars/common.yml"
+    - ["vars/secrets/{{ secret_variables }}", "vars/none.yml"]
+    - ["vars/local.yml", "vars/none.yml"]
+  roles:
+    - common
+    - users
+    - jetty
+    #- nfs_server
+    - postfix
+    - clamav
+

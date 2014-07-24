@@ -1,0 +1,37 @@
+---
+
+hostname: "{{ inventory_hostname }}"
+secondary_hostname: 127.0.0.1
+secondary_hostname_language: en
+
+admin: {'username' : 'admin', 'password': 'admin', 'email': 'vagrant@localhost'}
+
+nfs_shared_path: "/data/shared/nfs"
+cache_path: "/data/shared/cache"
+local_cache: "/tmp/cache"
+
+email_domain: "localhost"
+email_domain_access: "localhost"
+email_from: "no-reply@{{ email_domain }}"
+error_email_from: "error@{{ email_domain }}"
+
+admin_email: vagrant@localhost
+error_email: "{{ admin_email }}"
+
+# Web server config
+www_root: /var/www
+www_user: www-data
+www_group: www-data
+
+certificates_path: "/data/shared/ssl"
+basic_auth_path: false
+
+ssl_path: false
+ssl_crt_primary: server.crt
+ssl_crt_secondary: server.crt
+ssl_key_primary: server.key
+ssl_key_secondary: server.key
+
+# App server config
+app_port: 8080
+java_home: /usr/lib/jvm/java-7-openjdk-amd64
