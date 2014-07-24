@@ -20,26 +20,27 @@
     - libhttpmime-java
     - libwoodstox-java
   tags:
-  - jetty
+    - jetty
 
 - name: Create debian cache path
   file: path="{{ cache_path }}/debian" state=directory
   tags:
-  - jetty
+    - jetty
 
 - name: Setup Jetty
   template: src=jetty.j2 dest=/etc/default/jetty mode=0644 owner=root group=root
   register: jetty_setup
   tags:
-  - jetty
+    - jetty
+  notify:
+    - restart jetty
 
 - name: Ensure Jetty is restarted
   service: name=jetty state=restarted
-  when: jetty_setup|changed or fetch_schema|changed
   tags:
   - jetty
 
 - name: Ensure Jetty is running
   service: name=jetty state=started enabled=true
   tags:
-  - jetty
+    - jetty

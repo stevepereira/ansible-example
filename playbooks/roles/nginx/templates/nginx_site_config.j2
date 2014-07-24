@@ -83,9 +83,8 @@ server {
         log_not_found off;
     }
 
-    # Static?
     location /sample {
-        proxy_pass https://127.0.0.1:{{ app_port }}/sample;
+        proxy_pass http://127.0.0.1:{{ app_port }}/sample;
         proxy_set_header Host $host;
         proxy_cache cache;
         proxy_cache_bypass $no_cache;

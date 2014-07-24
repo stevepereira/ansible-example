@@ -1,3 +1,6 @@
+[loadbalancer]
+192.168.10.10
+
 [webserver]
 192.168.10.10
 

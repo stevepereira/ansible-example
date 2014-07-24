@@ -1,0 +1,83 @@
+---
+
+# Hapoxy config
+haproxy_user: "root"
+
+haproxy_global:
+  chroot: true
+  pidfile: "{{ shared_path }}/haproxy.pid"
+  maxconn: 1000
+  user: "{{ haproxy_user }}"
+  group: "{{ haproxy_user }}"
+  daemon: true
+  spread_checks: true
+  stats:
+      socket: "{{ shared_path }}/haproxy.sock"
+  log:
+    - address: "{{ log_shared_path }}/haproxy.log"
+      facility: syslog
+      level: warn
+      minlevel: warn
+      format: http
+
+haproxy_defaults:
+  mode: http
+  log: http
+  # options:
+  #   - <option>
+  retries: 5
+  # timeout:
+  #   - param: 
+  #     value:
+  maxconn: 1000
+  # stats:
+  #   enabled: true
+  #   hide_version: true
+  #   uri: 
+  #   realm:
+  #   auth:
+  #   refresh:
+
+haproxy_frontends:
+  - name: "{{ item.frontend_name }}"
+    ip: 0.0.0.0
+    bind: "{{ ip }}"
+    maxconn: 1000
+    # monitor: 
+    #   uri:
+    #   fail:
+    #     - <condition>
+    # acl:
+    #   - name:
+    #     condition:
+    # rate-limit-sessions:
+    # block:
+    #     - 
+    default_backend: "{{ haproxy_backends.name }}"
+    # use_backend:
+    #   - name: "{{ haproxy_backends.name }}"
+    #     condition: 
+
+haproxy_backends:
+  - name: "{{ item.backend_name }}"
+    disabled: false
+    description: "{{ haproxy_backends.name }}"
+    balance: 100
+    log: "{{ log_shared_path }}/{{ haproxy_backends.name }}"
+    retries: 3
+    contimeout: 20
+    http-send-name-header: true
+    # http-check-expect:
+    #     - condition
+    # acl:
+    #   - name:
+    #     condition:
+    servers:
+      - name: "{{ haproxy_backends.name }}"
+        ip: 0.0.0.0
+        port: {{ app_port }}
+        maxconn: 1000
+        params:
+              - param1
+    options:
+        - forwardfor

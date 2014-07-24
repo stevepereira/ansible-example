@@ -6,7 +6,9 @@ secondary_hostname_language: en
 
 admin: {'username' : 'admin', 'password': 'admin', 'email': 'vagrant@localhost'}
 
-nfs_shared_path: "/data/shared/nfs"
+shared_path: "/data/shared"
+nfs_shared_path: "{{ shared_path }}/nfs"
+log_shared_path: "{{ shared_path }}/log"
 cache_path: "/data/shared/cache"
 local_cache: "/tmp/cache"
 
@@ -23,7 +25,7 @@ www_root: /var/www
 www_user: www-data
 www_group: www-data
 
-certificates_path: "/data/shared/ssl"
+certificates_path: "{{ shared_path }}/ssl"
 basic_auth_path: false
 
 ssl: false
