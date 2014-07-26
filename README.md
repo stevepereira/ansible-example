@@ -45,7 +45,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * training (1-6 servers)
 * prod (6+ servers)
   
-  
+<img src="https://docs.google.com/drawings/d/1tBW-ADGkW613DCqbva56TA_kah-mICYJo3xi78-b_OM/pub?w=960&amp;h=600">
 
 - - -
 
@@ -132,38 +132,34 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Route53 or ELB can be added in front to allow geo-distributed haproxy
  * Web and App servers can be geo-distributed for fault tolerance
 
-### Rolling update method:
+## Rolling update method:
 * Triggered by CI creation of new artifact (could be rollback)
 * CI hosts assets and artifact
-* CI calls Ansible rolling_update playbook that runs within each web/app role serially: 
-  
-**Steps:**
-1. Notify chat/new relic of deploy  
-1. Chooses a web server and app server from the main pool  
-1. Notifies the LB to move each to the maint-* frontend/backend  
-1. Gracefully reloads LB  
-1. Swings 'last' symlink for assets and artifact on chosen servers from release-2 to previous release  
-1. Pushes assets.zip and artifact.war to chosen servers  
-1. Extracts the asset zip, jetty extracts the warfile  
-1. Swings 'current' symlink for assets and artifact on chosen servers from previous to current release  
-1. Run curl to servers to ensure deployment success  
-1. Notifies the LB to move each back into the main frontend/backend  
-1. Runs a cleanup on releases older than release-2  
-1. Progresses to next server in the pool  
-1. Notify chat/new relic/sns of success  
+
+### CI calls Ansible `rolling_update` playbook that runs within each web/app role serially:  
+ 1. Notify chat/new relic of deploy
+ 1. Chooses a web server and app server from the main pool
+ 1. Notifies the LB to move each to the maint-* frontend/backend
+ 1. Gracefully reloads LB
+ 1. Swings 'last' symlink for assets and artifact on chosen servers from release-2 to previous release
+ 1. Pushes assets.zip and artifact.war to chosen servers
+ 1. Extracts the asset zip, jetty extracts the warfile
+ 1. Swings 'current' symlink for assets and artifact on chosen servers from previous to current release
+ 1. Run curl to servers to ensure deployment success
+ 1. Notifies the LB to move each back into the main frontend/backend
+ 1. Runs a cleanup on releases older than release-2
+ 1. Progresses to next server in the pool
+ 1. Notify chat/new relic/sns of success
 
 ### On failure, trigger rollback:
-1. Restore asset and artifact symlinks
-1. Notifies the LB to move each back into the main frontend/backend
-1. Sends failure notification to chat/new relic/pagerduty/sns etc
+ 1. Restore asset and artifact symlinks
+ 1. Notifies the LB to move each back into the main frontend/backend
+ 1. Sends failure notification to chat/new relic/pagerduty/sns etc
 
-### Haproxy recycle on changes
-* Using haproxy handling:  
-  
-**Steps:**
-1. trigger iptables SYN drop  
-1. wait for completion (port not listening)  
-1. keepalive triggers live haproxy to take over shared IP  
-1. restart haproxy  
-1. open iptables  
+### Haproxy recycle on changes:
+ 1. trigger iptables SYN drop
+ 1. wait for completion (port not listening)
+ 1. keepalive triggers live haproxy to take over shared IP
+ 1. restart haproxy
+ 1. open iptables
 
