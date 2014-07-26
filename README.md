@@ -1,7 +1,5 @@
 #ansible_test  
 
-- - -
-
 An experimental lb/app/web cluster built for scale and flexibility
 
 Role server count can be configured within the Vagrantfile for multi-machine config
@@ -43,9 +41,11 @@ Tested on OSX, Ubuntu may require some tweaking
 ### Approach
 Of the components above, I have prior experience with all but Jetty though I have some prior recent experience with Tomcat - Jetty is commonly seen to be simpler and more performant. I've been looking to test it and this was a good opportunity. I tried in all cases to avoid any hard-coding in favour of dynamic inventory and variables, to allow for future scalability, simplified maintenance.
 
-#### Two server groups initially: 
+#### Two server groups initially:
 * training (1-6 servers)
 * prod (6+ servers)
+  
+  
 
 - - -
 
@@ -111,12 +111,13 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Logstash/Logsene for log aggregation
 
 #### Shared persistence option for legacy datastorage:
-2 or 3-phase commit combined with https://github.com/s3fs-fuse/s3fs-fuse is sufficient for shared persistence and consistency given the nature of the application (write light, read heavy) - 5GB max for a single file
+2 or 3-phase commit combined with https://github.com/s3fs-fuse/s3fs-fuse is sufficient for shared persistence and consistency given the nature of the application (write light, read heavy) 
+ * consider 5GB max for a single file
 
 ###Scaling:
 * Packer to bake Ansible-provisioned AMI or Ansible and snapshot to enable autoscaling
 * Considered boot with fetch script for war file (cloud-init?) though that would require connection back to CI which is a security risk
-** Jenkins will push to all servers
+ * Jenkins will push to all servers
 
 - - -
 
@@ -137,19 +138,19 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * CI calls Ansible rolling_update playbook that runs within each web/app role serially: 
   
 **Steps:**
-1. Notify chat/new relic of deploy
-1. Chooses a web server and app server from the main pool
-1. Notifies the LB to move each to the maint-* frontend/backend
-1. Gracefully reloads LB
-1. Swings 'last' symlink for assets and artifact on chosen servers from release-2 to previous release
-1. Pushes assets.zip and artifact.war to chosen servers
-1. Extracts the asset zip, jetty extracts the warfile
-1. Swings 'current' symlink for assets and artifact on chosen servers from previous to current release
-1. Run curl to servers to ensure deployment success
-1. Notifies the LB to move each back into the main frontend/backend
-1. Runs a cleanup on releases older than release-2
-1. Progresses to next server in the pool
-1. Notify chat/new relic/sns of success
+1. Notify chat/new relic of deploy  
+1. Chooses a web server and app server from the main pool  
+1. Notifies the LB to move each to the maint-* frontend/backend  
+1. Gracefully reloads LB  
+1. Swings 'last' symlink for assets and artifact on chosen servers from release-2 to previous release  
+1. Pushes assets.zip and artifact.war to chosen servers  
+1. Extracts the asset zip, jetty extracts the warfile  
+1. Swings 'current' symlink for assets and artifact on chosen servers from previous to current release  
+1. Run curl to servers to ensure deployment success  
+1. Notifies the LB to move each back into the main frontend/backend  
+1. Runs a cleanup on releases older than release-2  
+1. Progresses to next server in the pool  
+1. Notify chat/new relic/sns of success  
 
 ### On failure, trigger rollback:
 1. Restore asset and artifact symlinks
@@ -160,9 +161,9 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Using haproxy handling:  
   
 **Steps:**
-1. trigger iptables SYN drop
-1. wait for completion (port not listening)
-1. keepalive triggers live haproxy to take over shared IP
-1. restart haproxy
-1. open iptables
+1. trigger iptables SYN drop  
+1. wait for completion (port not listening)  
+1. keepalive triggers live haproxy to take over shared IP  
+1. restart haproxy  
+1. open iptables  
 
