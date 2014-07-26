@@ -1,4 +1,6 @@
 require 'yaml'
+require 'rake'
+require 'rspec/core/rake_task'
 
 read_yaml = ->(fname) do
   begin
@@ -10,14 +12,18 @@ end
 
 STDOUT.sync = true
 
-ansible_version = 1.6.3
-vagrant_version = 1.6.2
-virtualbox_version = 4.3.12-93733
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = 'spec/*/*_spec.rb'
+end
+
+ansible_version = '1.6.3'
+vagrant_version = '1.6.2'
+virtualbox_version = '4.3.12-93733'
 
 task :test do
-  puts “Ansible version: #{ansible_version}”
-  puts "Vagrant version: #{vagrant_version}”
-  puts "Virtualbox version: #{virtualbox_version}”
+  puts "Ansible version: #{ansible_version}"
+  puts "Vagrant version: #{vagrant_version}"
+  puts "Virtualbox version: #{virtualbox_version}"
 end
 
 notify = 'terminal-notifier -message SUCCESS || terminal-notifier -message FAILED'
@@ -116,7 +122,7 @@ namespace :setup do
 
   desc "vagrant plugins"
   task :vagrant_plugins do
-    plugins = ["cachier", "vbguest", "pristine", "hostsupdater", "triggers"]
+    plugins = ["cachier", "vbguest", "pristine", "hostsupdater", "triggers", "serverspec"]
     plugins.each do |p|
       command = "vagrant plugin list |grep #{p}"
       unless system( command )
