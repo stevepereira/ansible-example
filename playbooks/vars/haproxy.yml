@@ -1,7 +1,9 @@
 ---
 
-# Hapoxy config
+# Haproxy config
 haproxy_user: "root"
+
+
 
 haproxy_global:
   chroot: true
@@ -39,31 +41,36 @@ haproxy_defaults:
   #   refresh:
 
 haproxy_frontends:
-  - name: "{{ item.frontend_name }}"
+  - name: http
     ip: 0.0.0.0
-    bind: "{{ ip }}"
+    bind: "*:80"
     maxconn: 1000
     # monitor: 
     #   uri:
     #   fail:
     #     - <condition>
-    # acl:
-    #   - name:
-    #     condition:
+    acl:
+      - name: rule1
+        condition: hdr_dom(host) -i www.{{ ansible_hostname }} -i app.{{ ansible_hostname }}
+      - name: rule2
+        condition: hdr_dom(host) -i static.{{ ansible_hostname }}
     # rate-limit-sessions:
     # block:
     #     - 
-    default_backend: "{{ haproxy_backends.name }}"
-    # use_backend:
-    #   - name: "{{ haproxy_backends.name }}"
-    #     condition: 
+    default_backend: jetty
+    use_backend:
+      - name: jetty
+        condition: rule1
+    use_backend:
+      - name: nginx
+        condition: rule2
 
 haproxy_backends:
-  - name: "{{ item.backend_name }}"
+  - name: nginx
     disabled: false
-    description: "{{ haproxy_backends.name }}"
+    description: "{{ item.name }}"
     balance: 100
-    log: "{{ log_shared_path }}/{{ haproxy_backends.name }}"
+    log: "{{ log_shared_path }}/{{ item.name }}"
     retries: 3
     contimeout: 20
     http-send-name-header: true
@@ -73,9 +80,44 @@ haproxy_backends:
     #   - name:
     #     condition:
     servers:
-      - name: "{{ haproxy_backends.name }}"
-        ip: 0.0.0.0
-        port: {{ app_port }}
+      - name: "{{ item.name }}-01"
+        ip: "{{ item.name }}-01"
+        port: "{{ http_port }}"
+        maxconn: 1000
+        params:
+              - param1
+      - name: "{{ item.name }}-02"
+        ip: "{{ item.name }}-02"
+        port: "{{ http_port }}"
+        maxconn: 1000
+        params:
+              - param1
+    options:
+        - forwardfor
+
+  - name: jetty
+    disabled: false
+    description: "{{ item.name }}"
+    balance: 100
+    #log: "{{ log_shared_path }}/{{ item.name }}"
+    retries: 3
+    contimeout: 20
+    http-send-name-header: true
+    # http-check-expect:
+    #     - condition
+    # acl:
+    #   - name:
+    #     condition:
+    servers:
+      - name: "{{ item.name }}-01"
+        ip: "{{ item.name }}-01"
+        port: "{{ http_port }}"
+        maxconn: 1000
+        params:
+              - param1
+      - name: "{{ item.name }}-02"
+        ip: "{{ item.name }}-02"
+        port: "{{ http_port }}"
         maxconn: 1000
         params:
               - param1

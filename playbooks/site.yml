@@ -1,12 +1,5 @@
 ---
 
-#TODO:
-  # common config bootstrap
-  # hardening
-  # role specific config
-  # deploy
-  # test
-
 - hosts:
     - all
   sudo: yes
@@ -22,6 +15,7 @@
   sudo: yes
   vars_files:
     - vars/common.yml
+    - vars/haproxy.yml
   roles:
     - role: haproxy
   post_tasks:

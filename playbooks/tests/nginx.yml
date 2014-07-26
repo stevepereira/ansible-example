@@ -5,7 +5,10 @@
   tags: test
 
 - name: test | nginx is properly configured
-  local_action: command curl -I static.{{ ansible_hostname }}:{{ http_port }}
+  uri:
+    url=static.{{ ansible_hostname }}:{{ http_port }}
+    return_content=yes
+  #local_action: command curl -I static.{{ ansible_hostname }}:{{ http_port }}
   register: curl_result
   failed_when: "'HTTP/1.1 302 Found' not in curl_result.stdout"
   tags: test

@@ -5,7 +5,12 @@
 box = 'puphpet/ubuntu1404-x64'
 boxname = "dev"
 boxipaddress = "10.10.10.10"
-memory = 2048
+memory = 512
+gui = false
+cpus = 4
+loadbalancers = 2
+webservers = 2
+appservers = 2
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
 VAGRANTFILE_API_VERSION = "2"
@@ -18,6 +23,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = box
   config.vm.hostname = boxname
   config.vm.box_check_update = false
+
+  # SSH Set up.
+  config.ssh.forward_agent = true
 
   config.vm.network :private_network, ip: boxipaddress
 
@@ -38,13 +46,18 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   # Configure virtual machine setup.
-  config.vm.provider :virtualbox do |v|
-    v.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-    v.customize ["modifyvm", :id, "--memory", "#{memory}"]
+  config.vm.provider :virtualbox do |vb|
+    vb.gui = $gui
+    vb.memory = $memory
+    vb.cpus = $cpus
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
   end
 
-  # SSH Set up.
-  config.ssh.forward_agent = true
+  config.vm.provider :vmware_fusion do |vw|
+    vw.gui = $gui
+  end
+
+  config.vm.synced_folder "shared", "/data/shared", id: "data", :nfs => true, :mount_options => ['nolock,vers=3,udp']
 
   # Provision vagrant box with Ansible.
   config.vm.provision "ansible" do |ansible|
@@ -58,9 +71,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.skip_tags = "non-local"
     # ansible.tags = ‘nginx’
     # ansible.start_at_task = ‘’
-    end
-
-  config.vm.provision "serverspec" do |spec|
-    spec.pattern = 'spec/*_spec.rb'
   end
+
+  # config.vm.provision "serverspec" do |spec|
+  #   spec.pattern = 'spec/*_spec.rb'
+  # end
 end
