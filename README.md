@@ -50,19 +50,19 @@ Of the components above, I have prior experience with all but Jetty though I hav
 - - -
 
 ### Challenges and proposals:
-* Shared, scalable persistence for legacy datastore
+* **Shared, scalable persistence for legacy datastore**
  * drbd/syncthing/btsync/s3Fuse
-* Vagrant/AWS/Jenkins context switch
+* **Vagrant/AWS/Jenkins context switch**
  * Variable machine count in dev
  * Ansible + multi-inventory options
  * Role separation
-* Proper security practice
+* **Proper security practice**
  * Common hardening and least-privilege
  * Standard tools like ufw, fail2ban, logwatch and clamav
  * Sensitive data located on secure host, within environment variables where possible
-* Reproducible configuration
+* **Reproducible configuration**
  * Ansible with common role architecture, dynamic roles and inventory
-* Scaling and dynamic inventory
+* **Scaling and dynamic inventory**
  * Consider Consul
  * May need to change Ansible execution method to accelerated mode
 
@@ -132,11 +132,11 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Route53 or ELB can be added in front to allow geo-distributed haproxy
  * Web and App servers can be geo-distributed for fault tolerance
 
-## Rolling update method:
+### Rolling update method:
 * Triggered by CI creation of new artifact (could be rollback)
 * CI hosts assets and artifact
 
-### CI calls Ansible `rolling_update` playbook that runs within each web/app role serially:  
+##### CI calls Ansible `rolling_update` playbook that runs within each web/app role serially:  
  1. Notify chat/new relic of deploy
  1. Chooses a web server and app server from the main pool
  1. Notifies the LB to move each to the maint-* frontend/backend
