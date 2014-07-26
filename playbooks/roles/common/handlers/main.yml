@@ -1,0 +1,20 @@
+---
+
+- name: restart ssh
+  service: name=ssh state=restarted enabled=yes
+  sudo: yes
+
+- name: restart ssl
+  service: name={{ item }} state=restarted
+  with_items:
+    - ssh
+    - nginx
+    - whoopsie
+    - snmpd
+    - ntp
+    - supervisor
+    - postfix
+    - apache
+    - shibd
+  ignore_errors: yes
+

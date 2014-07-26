@@ -1,9 +1,12 @@
 ---
 
-- name: test | test jetty is present
-  local_action: command curl -I www.{{ webserver_hostname }}:{{ http_port }}
-  register: curl_result
-  failed_when: "'HTTP/1.1 302 Found' not in curl_result.stdout"
-  when: jetty_install is defined and jetty_install == "y"
+- name: test | jetty is installed
+  shell: dpkg -s jetty
   tags: test
+
+# - name: test | jetty is properly configured
+#   local_action: command curl -I localhost:{{ app_port }}
+#   register: curl_result
+#   failed_when: "'HTTP/1.1 302 Found' not in curl_result.stdout"
+#   tags: test
 

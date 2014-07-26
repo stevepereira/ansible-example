@@ -1,7 +1,11 @@
 ---
 
 - name: packages | update and ensure core packages are installed | deb
-  apt: pkg={{ item }} state=installed update_cache=yes cache_valid_time=36000
+  apt:
+    pkg={{ item }}
+    state=installed
+    update_cache=yes
+    cache_valid_time=36000
   tags: install
   sudo: true
   with_items:
@@ -11,7 +15,7 @@
     - htop
     - iotop
     - make
-    - openssl
+    - socat
     - ssh-import-id
     - strace
     - systemtap

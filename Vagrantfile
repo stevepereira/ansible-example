@@ -4,7 +4,7 @@
 # Set box configuration options
 box = 'puphpet/ubuntu1404-x64'
 boxname = "dev"
-boxipaddress = "192.168.10.10"
+boxipaddress = "10.10.10.10"
 memory = 2048
 
 # Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
@@ -50,13 +50,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = vagrant_dir + "/playbooks/site.yml"
     ansible.inventory_path = "vagrant-ansible-inventory"
-    ansible.skip_tags = "non-local"
+    ansible.host_key_checking = false
     ansible.limit = 'all'
     ansible.extra_vars = { clear_module_cache: true, ansible_ssh_user: 'vagrant' }
-    # ansible.tags = ‘nginx’
-    # ansible.start_at_task = ‘’
-    ansible.host_key_checking = false
     ansible.raw_ssh_args = '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes'
     ansible.verbose = ''
-  end
+    ansible.skip_tags = "non-local"
+    # ansible.tags = ‘nginx’
+    # ansible.start_at_task = ‘’
+    end
 end

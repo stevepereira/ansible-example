@@ -1,0 +1,169 @@
+---
+
+# https://github.com/fretscha-ansible/ansible-role-first-five-minutes
+
+- name: harden | remove unnecessary users
+  user: name={{ item }} state=absent
+  with_items:
+    - games
+    - gnats
+    - irc
+    - list
+    - news
+    - proxy
+    - uucp
+  tags:
+    - harden
+    - users
+
+- name: harden | set shell to nologin for users
+  user: name={{ item }} shell=/usr/sbin/nologin
+  with_items:
+    - daemon
+    - bin
+    - lp
+    - sys
+    - man
+    - mail
+    - backup
+    - nobody
+    - libuuid
+  tags: harden
+
+- name: harden | remove unnecessary groups
+  group: name={{ item }} state=absent
+  with_items:
+    - news
+    - uucp
+    - proxy
+    - list
+    - irc
+    - src
+    - gnats
+    - games
+  tags:
+    - harden
+    - groups
+
+- name: harden | secure root home directory
+  file: dest=/root state=directory mode=700
+  tags: harden
+
+# Shared memory
+- name: harden | secure tmpfs read only
+  mount: name=/dev/shm src=tmpfs fstype=tmpfs opts=rw,nosuid,nodev,noexec state=present
+  tags: tmpfs
+
+- name: harden | update ssl
+  apt:
+    pkg="{{ item }}"
+    state=latest
+    update_cache=yes
+    cache_valid_time=36000
+  with_items:
+    - libssl1.0.0
+    - openssl
+    - debian-goodies
+  notify: restart ssl
+  tags:
+    - harden
+    - openssl
+
+- name: harden | install misc security packages | deb
+  apt:
+    pkg="{{ item }}"
+    state=latest
+    update_cache=yes
+    cache_valid_time=36000
+  sudo: true
+  with_items:
+    - fail2ban
+    - ufw
+    - logwatch
+    - unattended-upgrades
+  tags: harden
+
+- name: harden | copy debconf selections so that Postfix can configure itself non-interactively
+  template: 
+    src=postfix_selections.j2
+    dest=/tmp/postfix_selections
+  tags: harden
+
+- name: harden | set up postfix to relay mail
+  command: debconf-set-selections /tmp/postfix_selections
+  tags: harden
+
+- name: harden | ensure unattended-upgrades only installs from $ubuntu_release-security
+  lineinfile: 
+    dest=/etc/apt/apt.conf.d/50unattended-upgrades
+    regexp="$ubuntu_release-updates"
+    state=absent
+  tags: harden
+
+- name: harden | change root password
+  user: 
+    name=root
+    password="{{ lookup('password', 'salt' ) }}"
+  tags: harden
+
+- name: harden | add deployment user
+  user:
+    name=deploy
+    shell=/bin/bash
+    password="{{ lookup('password', 'salt' ) }}"
+  tags: harden
+
+- name: harden | add authorized deploy key
+  authorized_key: 
+    user=deploy
+    manage_dir=yes
+    key="{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+  tags: harden
+
+- name: harden | add deploy user to sudoers
+  lineinfile:
+    dest=/etc/sudoers
+    regexp="deploy ALL"
+    line="deploy ALL=(ALL) ALL"
+    state=present
+  tags: harden
+
+# - name: harden | add ssh config file
+#   template: 
+#     src=ssh_config.j2
+#     dest=/etc/ssh/sshd_config
+#   tags: harden
+#   sudo: true
+#   notify: restart ssh
+
+- name: harden | setup ufw
+  shell: "ufw allow {{ item }}/tcp"
+  with_items:
+    - 22
+    - 443
+    - 80
+    - 8080
+  tags: harden
+
+- name: harden | enable ufw
+  shell: echo 'y' | ufw enable
+  tags: harden
+
+- name: harden | disallow password authentication
+  lineinfile: 
+    dest=/etc/ssh/sshd_config
+    regexp="^PasswordAuthentication"
+    line="PasswordAuthentication no"
+    state=present
+  notify: restart ssh
+  tags: harden
+
+- name: harden | disallow root SSH access
+  lineinfile: 
+    dest=/etc/ssh/sshd_config
+    regexp="^PermitRootLogin"
+    line="PermitRootLogin no"
+    state=present
+  notify: restart ssh
+  tags: harden
+

@@ -1,19 +1,4 @@
 ---
-- hosts:
-    - loadbalancer
-  sudo: yes
-  vars_files:
-    - vars/common.yml
-  pre_tasks:
-
-  roles:
-    - role: deploy
-
-  post_tasks:
-    - include: tests/main.yml
-
-  handlers:
-    - include: common/handlers/main.yml
 
 - hosts:
     - webserver
@@ -23,7 +8,7 @@
   pre_tasks:
 
   roles:
-    - role: deploy
+    - role: rolling_deploy
 
   post_tasks:
     - include: tests/main.yml
@@ -39,7 +24,7 @@
   pre_tasks:
 
   roles:
-    - role: deploy
+    - role: rolling_deploy
 
   post_tasks:
     - include: tests/main.yml

@@ -1,12 +1,25 @@
+[all]
+loadbalancer ansible_ssh_user=ubuntu
+webserver ansible_ssh_user=ubuntu
+appserver ansible_ssh_user=ubuntu
+
+[loadbalancer]
+ec2-55-23-199-32.us-east-1.compute.amazonaws.com
+ec2-54-72-124-122.us-east-1.compute.amazonaws.com
+
+[loadbalancer:vars]
+secret_variables=variables-alpha.yml
 
 [webserver]
-ec2-54-76-128-98.eu-west-1.compute.amazonaws.com
+ec2-54-73-18-98.us-east-1.compute.amazonaws.com
+ec2-64-92-128-87.us-east-1.compute.amazonaws.com
 
 [webserver:vars]
 secret_variables=variables-alpha.yml
 
-[dbserver]
-ec2-54-76-104-30.eu-west-1.compute.amazonaws.com
+[appserver]
+ec2-54-173-128-98.us-east-1.compute.amazonaws.com
+ec2-55-73-160-193.us-east-1.compute.amazonaws.com
 
-[dbserver:vars]
+[appserver:vars]
 secret_variables=variables-alpha.yml

@@ -3,15 +3,15 @@
 
 ## Requirements
 
-- Ubuntu x86_64 (tested with 14.04, 13.10 and 13.04)
+- Ubuntu x86_64 (tested with 14.04)
 
 
 ## Source
 
 Fetch source codes
 
-    git clone https://github.com/yhteentoimivuuspalvelut/ytp.git
-    cd ytp
+    git clone https://github.com/stevepereira/webcluster.git
+    cd webcluster
 
 ## Vagrant
 
@@ -55,7 +55,7 @@ We use [Ansible](http://www.ansible.com) configuration management to automate pr
 Run inside virtual machine:
 
     ssh-keygen -t rsa
-    
+
 Append generated key into authorized_keys:
 
     cat /home/vagrant/.ssh/id_rsa.pub >> /home/vagrant/.ssh/authorized_keys
@@ -78,7 +78,6 @@ Vagrant command looks for Vagrantfile which contains all the virtual machine con
 
 If you need to make adjustments to the provisioning configuration, you can either edit the Ansible settings in the Vagrant file, or simply run Ansible without Vagrant:
 
-    # cd into the main ytp directory (cd /src inside vagrant)
     ansible-playbook --inventory-file=vagrant/vagrant-ansible-inventory --user=$USER -v --ask-sudo-pass --ask-pass ansible/single-server.yml --skip-tags=has-hostname,non-local
 
 If you are using ssh keys the following may suffice:

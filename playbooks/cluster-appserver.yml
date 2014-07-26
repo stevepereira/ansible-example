@@ -11,6 +11,6 @@
     - users
     - jetty
     #- nfs_server
-    - postfix
     - clamav
+    #- postfix
 

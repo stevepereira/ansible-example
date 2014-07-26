@@ -1,19 +1,19 @@
 ---
 
-- name: Set localtime timezone
+- name: set localtime timezone
   command: /bin/cp "/usr/share/zoneinfo/{{ timezone }}" /etc/localtime
   tags:
     - common
     - timezone
 
-- name: Set timezone
+- name: set timezone
   template: src=timezone.j2 dest=/etc/timezone
   register: set_timezone
   tags:
     - common
     - timezone
 
-- name: Update tzdata
+- name: update tzdata
   command: /usr/sbin/dpkg-reconfigure --frontend noninteractive tzdata
   when: set_timezone|changed
   tags:

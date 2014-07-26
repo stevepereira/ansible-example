@@ -8,19 +8,24 @@
   # test
 
 - hosts:
+    - all
+  sudo: yes
+  vars_files:
+    - vars/common.yml
+  roles:
+    - role: common
+  handlers:
+    - include: common/handlers/main.yml
+
+- hosts:
     - loadbalancer
   sudo: yes
   vars_files:
     - vars/common.yml
-  pre_tasks:
-
   roles:
-    - role: common
     - role: haproxy
-
   post_tasks:
-    - include: tests/main.yml
-
+    - include: tests/haproxy.yml
   handlers:
     - include: common/handlers/main.yml
 
@@ -29,15 +34,10 @@
   sudo: yes
   vars_files:
     - vars/common.yml
-  pre_tasks:
-
   roles:
-    - role: common
     - role: nginx
-
   post_tasks:
-    - include: tests/main.yml
-
+    #    - include: tests/nginx.yml
   handlers:
     - include: common/handlers/main.yml
 
@@ -46,14 +46,10 @@
   sudo: yes
   vars_files:
     - vars/common.yml
-  pre_tasks:
-
   roles:
-    - role: common
     - role: jetty
-
+    - role: deploy
   post_tasks:
-    - include: tests/main.yml
-
+    - include: tests/jetty.yml
   handlers:
     - include: common/handlers/main.yml

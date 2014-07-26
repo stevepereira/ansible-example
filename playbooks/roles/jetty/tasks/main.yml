@@ -1,6 +1,6 @@
 ---
 
-- name: Ensure Jetty requirements
+- name: install jetty requirements
   apt: pkg="{{ item }}" state=latest
   with_items:
     - openjdk-7-jdk
@@ -22,25 +22,25 @@
   tags:
     - jetty
 
-- name: Create debian cache path
+- name: create debian cache path
   file: path="{{ cache_path }}/debian" state=directory
   tags:
     - jetty
 
-- name: Setup Jetty
-  template: src=jetty.j2 dest=/etc/default/jetty mode=0644 owner=root group=root
+- name: setup jetty
+  template: 
+    src=jetty.j2
+    dest=/etc/default/jetty
+    mode=0644
+    owner=root
+    group=root
   register: jetty_setup
   tags:
     - jetty
   notify:
     - restart jetty
 
-- name: Ensure Jetty is restarted
-  service: name=jetty state=restarted
-  tags:
-  - jetty
-
-- name: Ensure Jetty is running
+- name: ensure jetty is running
   service: name=jetty state=started enabled=true
   tags:
     - jetty

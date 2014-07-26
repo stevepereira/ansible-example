@@ -8,3 +8,4 @@ apt_source_url: "http://fi.archive.ubuntu.com"
 # Ubuntu 14.04
 ubuntu_codename: trusty
 
+postfix_relay: "{{ ansible_hostname }}"

@@ -1,9 +1,12 @@
 ---
 
-- name: test | test haproxy is present
-  local_action: command curl -I www.{{ webserver_hostname }}:{{ http_port }}
-  register: curl_result
-  failed_when: "'HTTP/1.1 302 Found' not in curl_result.stdout"
-  when: haproxy_install is defined and haproxy_install == "y"
+- name: test | haproxy is installed
+  shell: haproxy -v
   tags: test
+
+# - name: test | test haproxy is configured
+#   local_action: command curl -I {{ hostname }}:{{ http_port }}
+#   register: curl_result
+#   failed_when: "'HTTP/1.1 200 OK' not in curl_result.stdout"
+#   tags: test
 
