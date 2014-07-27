@@ -22,19 +22,16 @@ Machines are defined in the top section of the Vagrantfile
 * playbooks/site.yml - vagrant ansible config file
 * playbooks/alpha-inventory.yml - example aws ansible inventory - replace with ec2.py for dynamic inventory
 * playbooks/cluster.yml - external ansible inventory - replace with ec2.py for dynamic inventory
+
+#### Notable folders:
 * playbooks/vars/ - ansible config files
 * playbooks/roles/ - ansible roles
+* shared/ - vagrant guest mount folder
+* shared/assets/ - nginx static folder
 
 Tested on OSX, Ubuntu may require some tweaking
 
 #####TODO:
-  * provision assets from local mount folder
-  * multiple server provisioning
-  * haproxy config - currently broken
-  * haproxy VIP and keepalive
-  * scalable servercount
-  * flesh out documentation
-  * Add haip config
   * Correct rolling_update to follow full description below
 
 - - -
