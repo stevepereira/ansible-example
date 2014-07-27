@@ -1,0 +1,17 @@
+---
+# tasks file for keepalived
+
+- name: install keepalived
+  apt: name=keepalived
+
+- name: keepalived conf template
+  template:
+    dest=/etc/keepalived/keepalived.conf
+    src=etc_keepalived_keepalived_conf
+  notify: restart keepalived
+
+- name: start keepalived
+  service:
+    name=keepalived
+    state=started
+    enabled=yes

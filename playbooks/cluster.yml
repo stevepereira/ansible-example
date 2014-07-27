@@ -1,5 +1,10 @@
 ---
 # Top-level Ansible playbook for building a cluster of servers for the service
+- hosts:
+    - all
+  sudo: yes
+  gather_facts: true #gather facts for all servers
+
 - include: cluster-loadbalancer.yml
 - include: cluster-appserver.yml
 - include: cluster-webserver.yml

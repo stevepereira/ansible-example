@@ -1,5 +1,12 @@
 ---
 - name: restart jetty
   service: name=jetty state=restarted
+  sudo: yes
+  tags:
+  - jetty
+
+- name: reload jetty
+  command: service jetty force-reload
+  sudo: yes
   tags:
   - jetty

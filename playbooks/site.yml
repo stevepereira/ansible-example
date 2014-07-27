@@ -3,6 +3,7 @@
 - hosts:
     - all
   sudo: yes
+  gather_facts: true
   vars_files:
     - vars/common.yml
   roles:
@@ -13,10 +14,13 @@
 - hosts:
     - loadbalancer
   sudo: yes
+  gather_facts: false
   vars_files:
     - vars/common.yml
     - vars/haproxy.yml
   roles:
+    - role: ssl
+    - role: keepalived
     - role: haproxy
   post_tasks:
     - include: tests/haproxy.yml
@@ -26,8 +30,10 @@
 - hosts:
     - webserver
   sudo: yes
+  gather_facts: false
   vars_files:
     - vars/common.yml
+    - vars/nginx.yml
   roles:
     - role: nginx
   post_tasks:
@@ -38,6 +44,7 @@
 - hosts:
     - appserver
   sudo: yes
+  gather_facts: false
   vars_files:
     - vars/common.yml
   roles:

@@ -4,12 +4,26 @@ An experimental lb/app/web cluster built for scale and flexibility
 
 Role server count can be configured within the Vagrantfile for multi-machine config
 
-####Installation:
+#### Installation:
 * Clone the repo
 * Enter the folder
 * Type  `rake`
 
 Manual installation of requirements can be done via Homebrew and the included Brewfile
+
+#### Vagrant commands:
+* start machines: `vagrant up --no-provision`
+* stop machines: `vagrant halt`
+* provision a specified server role (e.g. lb-01): `vagrant provision lb-01`  
+Machines are defined in the top section of the Vagrantfile
+
+#### Notable config files:
+* Vagrantfile
+* playbooks/site.yml - vagrant ansible config file
+* playbooks/alpha-inventory.yml - example aws ansible inventory - replace with ec2.py for dynamic inventory
+* playbooks/cluster.yml - external ansible inventory - replace with ec2.py for dynamic inventory
+* playbooks/vars/ - ansible config files
+* playbooks/roles/ - ansible roles
 
 Tested on OSX, Ubuntu may require some tweaking
 
@@ -99,6 +113,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Perfect forward secrecy
 * Replace Prevayler with RDS or noSQL
 * Elastic load balancing/route53 - secondary dns
+* Elastic IP remap - EC2 API Tools command ec2-associate-address
 * Resource-based deployment:
  * OpenShift Origin Cluster
  * Mesos + Consul + Docker
