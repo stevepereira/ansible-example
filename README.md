@@ -15,7 +15,7 @@ Manual installation of requirements can be done via Homebrew and the included Br
 * start machines: `vagrant up --no-provision`
 * stop machines: `vagrant halt`
 * provision a specified server role (e.g. lb-01): `vagrant provision lb-01`  
-Machines are defined in the top section of the Vagrantfile
+Machines are defined in the top section of the Vagrantfile - *the base machine memory is 512, bump it up if you've got plenty to spare*
 
 #### Notable config files:
 * Vagrantfile
