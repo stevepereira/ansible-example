@@ -40,6 +40,9 @@ Default vip: 10.10.10.10
 
 #####TODO:
   * Correct rolling_update to follow full description below
+  * Restore dynamic haproxy config assembly with static improvements
+  * Investigate Travis for continuous testing
+  * See *Future* below
 
 - - -
 
@@ -113,7 +116,6 @@ Of the components above, I have prior experience with all but Jetty though I hav
  * Ansible configured to run with restricted tags, specified roles or only tests if desired
 
 ### Future: 
-* SSL - in place but currently disabled and untested
 * Perfect forward secrecy [here](https://gist.github.com/rnewson/8384304)
 * Replace Prevayler with RDS or noSQL
 * Elastic load balancing/route53 - secondary dns
