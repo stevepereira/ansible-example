@@ -3,11 +3,9 @@
     dest=/etc/profile.d/path.sh
     content="export PATH=$PATH:/usr/local/bin"
 
-- name: Make path file executable
+- name: Make paths executable
   shell: chmod +x /etc/profile.d/path.sh
-
-- name: Reload profile
-  shell: . /etc/profile
+  notify: reload profile
 
 - shell: echo $PATH
   register: path

@@ -135,7 +135,7 @@ namespace :setup do
   task :vagrant_up do
     command = "vagrant status |grep running"
     unless system( command )
-      sh "time vagrant up && #{notify}"
+      sh "time vagrant up --no-provision && #{notify}"
     end
   end
 

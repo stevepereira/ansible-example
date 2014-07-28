@@ -1,13 +1,24 @@
 ---
 
-- name: Create SSL path
-  file: path="{{ certificates_path }}" state=directory mode=0755 owner=root group="{{ www_group }}"
+- name: create SSL paths
+  file:
+    path="{{ certificates_path }}/assemble"
+    state=directory
+    owner=root
+    group="{{ www_group }}"
+    recurse=yes
+    mode=0755
   tags:
+    - haproxy
     - nginx
     - ssl
 
-- name: Copy SSL files
-  copy: src="{{ ssl_path }}/{{ item }}" dest={{ certificates_path }}/{{ item }} owner=root group="{{ www_group }}" mode=640
+- name: copy SSL files
+  copy: 
+    src="{{ ssl_path }}/{{ item }}"
+    dest="{{ certificates_path }}/{{ item }}"
+    owner=root group="{{ www_group }}"
+    mode=640
   when: ssl_path != false
   with_items:
     - "{{ ssl_crt_primary }}"
@@ -15,20 +26,42 @@
     - "{{ ssl_key_primary }}"
     - "{{ ssl_key_secondary }}"
   tags:
+    - haproxy
     - nginx
     - ssl
 
-- name: Generate self-signed SSL certificate
+- name: generate self-signed SSL certificate
   command: openssl req -new -nodes -x509 -subj "/C=US/ST=Ontario/L=Toronto/O=IT/CN={{ ansible_fqdn }}" -days 3650 -keyout "{{ certificates_path }}/{{ ssl_key_primary }}" -out "{{ certificates_path }}/{{ ssl_crt_primary }}" -extensions v3_ca creates="{{ certificates_path }}/{{ ssl_crt_primary }}"
   register: generate_certificates
   when: ssl_path == false
   tags:
+    - haproxy
     - nginx
     - ssl
 
-- name: Ensure certificates ownership
+- name: copy cert files to pem fragments (haproxy ordering)
+  command: cp "{{ certificates_path }}/{{ item.file }}" "{{ certificates_path }}/assemble/{{ item.order }}-{{ item.file }}"
+  when: ssl_path == false and generate_certificates|changed
+  with_items:
+    - { file: "{{ ssl_crt_primary }}", order: '10' }
+    - { file: "{{ ssl_key_primary }}", order: '20' }
+  tags:
+    - haproxy
+    - nginx
+    - ssl
+
+- name: generate pem from key and crt fragments
+  assemble: src="{{ certificates_path }}/assemble" dest="{{ certificates_path }}/{{ ssl_pem }}"
+  when: ssl_path == false and generate_certificates|changed
+  tags:
+    - haproxy
+    - nginx
+    - ssl
+
+- name: ensure certificates ownership
   shell: chmod 640 {{ certificates_path }}/* && chown "root:{{ www_group }}" {{ certificates_path }}/*
   when: ssl_path == false and generate_certificates|changed
   tags:
+    - haproxy
     - nginx
     - ssl

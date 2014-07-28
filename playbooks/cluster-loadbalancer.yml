@@ -2,14 +2,15 @@
 
 - hosts: loadbalancer
   sudo: true
+  gather_facts: false
   vars_files:
     - "vars/common.yml"
+    - "vars/haproxy.yml"
     - ["vars/secrets/{{ secret_variables }}", "vars/none.yml"]
     - ["vars/local.yml", "vars/none.yml"]
   roles:
     - common
-    - users
-    - firewall
     - ssl
     - clamav
+    - keepalived
     - haproxy

@@ -3,6 +3,7 @@
 - hosts:
     - all
   sudo: yes
+  gather_facts: true
   vars_files:
     - vars/common.yml
   roles:
@@ -11,33 +12,23 @@
     - include: common/handlers/main.yml
 
 - hosts:
-    - loadbalancer
-  sudo: yes
-  vars_files:
-    - vars/common.yml
-    - vars/haproxy.yml
-  roles:
-    - role: haproxy
-  post_tasks:
-    - include: tests/haproxy.yml
-  handlers:
-    - include: common/handlers/main.yml
-
-- hosts:
     - webserver
   sudo: yes
+  gather_facts: false
   vars_files:
     - vars/common.yml
+    - vars/nginx.yml
   roles:
     - role: nginx
   post_tasks:
-    #    - include: tests/nginx.yml
+    - include: tests/nginx.yml
   handlers:
     - include: common/handlers/main.yml
 
 - hosts:
     - appserver
   sudo: yes
+  gather_facts: false
   vars_files:
     - vars/common.yml
   roles:
@@ -45,5 +36,21 @@
     - role: deploy
   post_tasks:
     - include: tests/jetty.yml
+  handlers:
+    - include: common/handlers/main.yml
+
+- hosts:
+    - loadbalancer
+  sudo: yes
+  gather_facts: false
+  vars_files:
+    - vars/common.yml
+    - vars/haproxy.yml
+  roles:
+    - role: ssl
+    - role: keepalived
+    - role: haproxy
+  post_tasks:
+    - include: tests/haproxy.yml
   handlers:
     - include: common/handlers/main.yml

@@ -1,5 +1,12 @@
 # -*- mode: gitignore; -*-
 
+## Vagrant
+#=============================================================================#
+.vagrant/
+# custom settings.yml exclusion
+settings.yml
+shared/*
+
 ## Archive
 #=============================================================================#
 # It's better to unpack these files and commit the raw source because
@@ -52,12 +59,6 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-
-## Vagrant
-#=============================================================================#
-.vagrant/
-# custom settings.yml exclusion
-settings.yml
 
 ## Vim
 #=============================================================================#

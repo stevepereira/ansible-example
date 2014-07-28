@@ -1,9 +1,10 @@
 ---
 
+vip: 10.10.10.10
+public_aliases: "{{ domain }} www.{{ domain }} static.{{ domain }} app.{{ domain }}"
+
 # Haproxy config
 haproxy_user: "root"
-
-
 
 haproxy_global:
   chroot: true
@@ -15,35 +16,11 @@ haproxy_global:
   spread_checks: true
   stats:
       socket: "{{ shared_path }}/haproxy.sock"
-  log:
-    - address: "{{ log_shared_path }}/haproxy.log"
-      facility: syslog
-      level: warn
-      minlevel: warn
-      format: http
-
-haproxy_defaults:
-  mode: http
-  log: http
-  # options:
-  #   - <option>
-  retries: 5
-  # timeout:
-  #   - param: 
-  #     value:
-  maxconn: 1000
-  # stats:
-  #   enabled: true
-  #   hide_version: true
-  #   uri: 
-  #   realm:
-  #   auth:
-  #   refresh:
 
 haproxy_frontends:
   - name: http
-    ip: 0.0.0.0
-    bind: "*:80"
+    ip: "{{ vip }}:80"
+    bind: "{{ vip }}"
     maxconn: 1000
     # monitor: 
     #   uri:
@@ -51,75 +28,45 @@ haproxy_frontends:
     #     - <condition>
     acl:
       - name: rule1
-        condition: hdr_dom(host) -i www.{{ ansible_hostname }} -i app.{{ ansible_hostname }}
-      - name: rule2
-        condition: hdr_dom(host) -i static.{{ ansible_hostname }}
-    # rate-limit-sessions:
-    # block:
-    #     - 
-    default_backend: jetty
+        condition: hdr_beg(host) -i static
+    default_backend: appserver
     use_backend:
-      - name: jetty
+      - name: webserver
         condition: rule1
-    use_backend:
-      - name: nginx
-        condition: rule2
 
 haproxy_backends:
-  - name: nginx
+  - name: appserver
     disabled: false
-    description: "{{ item.name }}"
+    description: jetty
     balance: 100
-    log: "{{ log_shared_path }}/{{ item.name }}"
+    log: "{{ log_shared_path }}/{{ ansible_fqdn }}.log"
     retries: 3
     contimeout: 20
     http-send-name-header: true
-    # http-check-expect:
-    #     - condition
     # acl:
-    #   - name:
-    #     condition:
+    #   - name: rule1
+    #     condition: hdr_dom(host) -i "{{ domain }}" -i "app.{{ domain }}" -i "www.{{ domain }}"
     servers:
-      - name: "{{ item.name }}-01"
-        ip: "{{ item.name }}-01"
-        port: "{{ http_port }}"
-        maxconn: 1000
-        params:
-              - param1
-      - name: "{{ item.name }}-02"
-        ip: "{{ item.name }}-02"
-        port: "{{ http_port }}"
-        maxconn: 1000
-        params:
-              - param1
+      - name: app-01
+        ip: 10.10.10.13
+        port: 8080
     options:
         - forwardfor
 
-  - name: jetty
+  - name: webserver
     disabled: false
-    description: "{{ item.name }}"
+    description: nginx
     balance: 100
-    #log: "{{ log_shared_path }}/{{ item.name }}"
+    log: "{{ log_shared_path }}/{{ ansible_fqdn }}.log"
     retries: 3
     contimeout: 20
     http-send-name-header: true
-    # http-check-expect:
-    #     - condition
     # acl:
-    #   - name:
-    #     condition:
+    #   - name: rule2
+    #     condition: hdr_dom(host) -i "static.{{ domain }}"
     servers:
-      - name: "{{ item.name }}-01"
-        ip: "{{ item.name }}-01"
-        port: "{{ http_port }}"
-        maxconn: 1000
-        params:
-              - param1
-      - name: "{{ item.name }}-02"
-        ip: "{{ item.name }}-02"
-        port: "{{ http_port }}"
-        maxconn: 1000
-        params:
-              - param1
+      - name: web-01
+        ip: 10.10.10.12
+        port: 80
     options:
         - forwardfor

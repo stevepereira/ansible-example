@@ -4,23 +4,41 @@ An experimental lb/app/web cluster built for scale and flexibility
 
 Role server count can be configured within the Vagrantfile for multi-machine config
 
-####Installation:
+#### Installation:
 * Clone the repo
 * Enter the folder
 * Type  `rake`
 
 Manual installation of requirements can be done via Homebrew and the included Brewfile
 
+#### Vagrant commands:
+* start machines: `vagrant up --no-provision`
+* stop machines: `vagrant halt`
+* provision a specified server role (e.g. lb-01): `vagrant provision lb-01`  
+Machines are defined in the top section of the Vagrantfile - *the base machine memory is 512, bump it up if you've got plenty to spare*
+
+#### Notable config files:
+* Vagrantfile
+* playbooks/site.yml - vagrant ansible config file
+* playbooks/alpha-inventory.yml - example aws ansible inventory - replace with ec2.py for dynamic inventory
+* playbooks/cluster.yml - external ansible inventory - replace with ec2.py for dynamic inventory
+
+#### Notable folders:
+* playbooks/vars/ - ansible config files
+* playbooks/roles/ - ansible roles
+* shared/ - vagrant guest mount folder
+* shared/assets/ - nginx static folder
+
 Tested on OSX, Ubuntu may require some tweaking
 
+#### URLS:
+All urls depend on DNS remotely defined or supplied by [xip.io](xip.io) or a hosts entry  
+Haproxy supplies an HA virtual ip (vip) courtesy of keepalived and defined in the haproxy vars file, so point hosts, DNS or xip to that ip  
+Default vip: 10.10.10.10
+* [http://app.10.10.10.10.xip.io/sample](http://app.10.10.10.10.xip.io/sample) - jetty war sample app
+* [http://static.10.10.10.10.xip.io/favicon.ico](http://static.10.10.10.10.xip.io/favicon.ico) - nginx static sample file
+
 #####TODO:
-  * provision assets from local mount folder
-  * multiple server provisioning
-  * haproxy config - currently broken
-  * haproxy VIP and keepalive
-  * scalable servercount
-  * flesh out documentation
-  * Add haip config
   * Correct rolling_update to follow full description below
 
 - - -
@@ -64,7 +82,8 @@ Of the components above, I have prior experience with all but Jetty though I hav
  * Ansible with common role architecture, dynamic roles and inventory
 * **Scaling and dynamic inventory**
  * Consider Consul
- * May need to change Ansible execution method to accelerated mode
+ * ec2.py for ansible dynamic inventory
+ * May need to change Ansible execution method to accelerated mode or local provisioning @ hundreds of hosts
 
 ### Principles:
 * **Effective separation of concerns by role**
@@ -94,11 +113,11 @@ Of the components above, I have prior experience with all but Jetty though I hav
  * Ansible configured to run with restricted tags, specified roles or only tests if desired
 
 ### Future: 
-* Rolling restart for haproxy changes to prevent any downtime
-* SSL
-* Perfect forward secrecy
+* SSL - in place but currently disabled and untested
+* Perfect forward secrecy [here](https://gist.github.com/rnewson/8384304)
 * Replace Prevayler with RDS or noSQL
 * Elastic load balancing/route53 - secondary dns
+* Elastic IP remap - EC2 API Tools command ec2-associate-address
 * Resource-based deployment:
  * OpenShift Origin Cluster
  * Mesos + Consul + Docker

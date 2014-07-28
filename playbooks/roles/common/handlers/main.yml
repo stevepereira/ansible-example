@@ -1,5 +1,8 @@
 ---
 
+- name: reload profile
+  shell: . /etc/profile
+
 - name: restart ssh
   service: name=ssh state=restarted enabled=yes
   sudo: yes

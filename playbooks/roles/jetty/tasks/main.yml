@@ -27,6 +27,15 @@
   tags:
     - jetty
 
+- name: set jetty home
+  copy:
+    dest=/etc/profile.d/jetty.sh
+    content="export JETTY_HOME={{ webapps_path }}"
+
+- name: make paths executable
+  shell: chmod +x /etc/profile.d/jetty.sh
+  notify: reload profile
+
 - name: setup jetty
   template: 
     src=jetty.j2
