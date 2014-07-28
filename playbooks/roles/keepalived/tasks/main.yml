@@ -15,3 +15,9 @@
     name=keepalived
     state=started
     enabled=yes
+
+- name: update hosts for vip
+  lineinfile:
+    dest=/etc/hosts
+    regexp="^{{ vip }}"
+    line="{{ vip }} {{ public_aliases }}"

@@ -7,11 +7,12 @@ memory = 512
 gui = false
 cpus = 2
 
-# update vagrant-ansible-inventory to match
+# update vagrant-ansible-inventory to match the config below
+# default config uses a vip 10.10.10.10 that should be configured for all fqdns
 boxes = [
-  { :name => 'lb-01', :type => :loadbalancer, :ip => '10.10.10.11', :primary => true, :cpus => $cpus, :memory => $memory },
-  { :name => 'web-01', :type => :webserver, :ip => '10.10.10.12', :primary => false, :cpus => $cpus, :memory => $memory },
-  { :name => 'app-01', :type => :appserver, :ip => '10.10.10.13', :primary => false, :cpus => $cpus, :memory => $memory }
+  { :name => 'lb-01', :aliases => ['{{ vip }}.xip.io', 'www.{{ vip }}.xip.io', 'static.{{ vip }}.xip.io', 'app.{{ vip }}.xip.io', 'lb-01.{{ vip }}.xip.io'], :type => :loadbalancer, :ip => '10.10.10.11', :primary => true, :cpus => $cpus, :memory => $memory },
+  { :name => 'web-01', :aliases => ['web-01.{{ vip }}.xip.io'], :type => :webserver, :ip => '10.10.10.12', :primary => false, :cpus => $cpus, :memory => $memory },
+  { :name => 'app-01', :aliases => ['app-01.{{ vip }}.xip.io'], :type => :appserver, :ip => '10.10.10.13', :primary => false, :cpus => $cpus, :memory => $memory }
 ]
 
 # write ansible inventory based on boxes
@@ -51,7 +52,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |c|
         config.hostmanager.manage_host = true
         config.hostmanager.ignore_private_ip = false
         config.hostmanager.include_offline = true
-        config.hostmanager.aliases = [ v[:name] + ".dev" ]
+        config.hostmanager.aliases = v[:aliases]
         config.vm.provision :hostmanager
       end
 
@@ -77,7 +78,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |c|
       end
 
       config.vm.synced_folder "shared", "/data/shared", id: "data", :nfs => true, :mount_options => ['nolock,vers=3,udp']
-      
+
       # Provision vagrant box with Ansible
       config.vm.provision "ansible" do |ansible|
         ansible.playbook = vagrant_dir + "/playbooks/site.yml"

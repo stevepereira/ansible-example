@@ -5,16 +5,28 @@
 #   tags:
 #   - deploy
 
-- name: download warfile
-  get_url:
-    url={{ app_war }}
-    dest={{ webapps_path }}
-    sha256sum={{ war_sha256sum }}
+- name: copy warfile
+  file:
+    src="{{ app_war }}"
+    dest="{{ webapps_path }}/{{ app_name }}.war"
+    state=link
     owner=jetty
     group=adm
     mode=0777
   tags:
   - deploy
+  notify: reload jetty
+
+# - name: download warfile
+#   get_url:
+#     url={{ app_war_url }}
+#     dest={{ webapps_path }}
+#     sha256sum={{ war_sha256sum }}
+#     owner=jetty
+#     group=adm
+#     mode=0777
+#   tags:
+#   - deploy
 
 # - name: ensure ownership
 #   shell: "chown -R jetty:adm {{ webapps_path }} && chmod -R u+rwX,g+rwX,o-rwx {{ webapps_path }}"

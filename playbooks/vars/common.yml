@@ -1,9 +1,15 @@
 ---
 
+## Web config
+domain: "example.dev"
 hostname: "{{ inventory_hostname }}"
 secondary_hostname: 127.0.0.1
 secondary_hostname_language: en
 http_port: 80
+www_root: "{{ shared_path }}/assets"
+www_user: www-data
+www_group: www-data
+nginx_app: static
 
 admin: {'username' : 'admin', 'password': 'admin', 'email': 'vagrant@localhost'}
 
@@ -21,11 +27,6 @@ error_email_from: "error@{{ email_domain }}"
 
 admin_email: vagrant@localhost
 error_email: "{{ admin_email }}"
-
-## Web config
-www_root: "{{ shared_path }}/assets }}"
-www_user: www-data
-www_group: www-data
 
 ## SSL config
 certificates_path: "{{ shared_path }}/ssl"
@@ -46,4 +47,5 @@ java_home: /usr/lib/jvm/java-7-openjdk-amd64
 webapps_path: /usr/share/jetty/webapps
 app_name: sample
 app_war: "{{ shared_path }}/{{ app_name}}.war"
+app_war_url: "https://tomcat.apache.org/tomcat-7.0-doc/appdev/sample/{{ app_name}}.war"
 war_sha256sum: 89b33caa5bf4cfd235f060c396cb1a5acb2734a1366db325676f48c5f5ed92e5

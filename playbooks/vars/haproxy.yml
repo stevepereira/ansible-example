@@ -1,6 +1,7 @@
 ---
 
 vip: 10.10.10.10
+public_aliases: "{{ domain }} www.{{ domain }} static.{{ domain }} app.{{ domain }}"
 
 # Haproxy config
 haproxy_user: "root"
@@ -27,29 +28,24 @@ haproxy_frontends:
     #     - <condition>
     acl:
       - name: rule1
-        condition: hdr_dom(host) -i {{ ansible_hostname }} -i app.{{ ansible_hostname }} -i www.{{ ansible_hostname }}
-      - name: rule2
-        condition: hdr_dom(host) -i static.{{ ansible_hostname }}
+        condition: hdr_beg(host) -i static
     default_backend: appserver
     use_backend:
-      - name: appserver
-        condition: rule1
-    use_backend:
       - name: webserver
-        condition: rule2
+        condition: rule1
 
 haproxy_backends:
   - name: appserver
     disabled: false
     description: jetty
     balance: 100
-    log: "{{ log_shared_path }}/{{ ansible_hostname }}.log"
+    log: "{{ log_shared_path }}/{{ ansible_fqdn }}.log"
     retries: 3
     contimeout: 20
     http-send-name-header: true
-    acl:
-      - name: rule1
-        condition: hdr_dom(host) -i {{ ansible_hostname }} -i app.{{ ansible_hostname }} -i www.{{ ansible_hostname }}
+    # acl:
+    #   - name: rule1
+    #     condition: hdr_dom(host) -i "{{ domain }}" -i "app.{{ domain }}" -i "www.{{ domain }}"
     servers:
       - name: app-01
         ip: 10.10.10.13
@@ -61,13 +57,13 @@ haproxy_backends:
     disabled: false
     description: nginx
     balance: 100
-    log: "{{ log_shared_path }}/{{ ansible_hostname }}.log"
+    log: "{{ log_shared_path }}/{{ ansible_fqdn }}.log"
     retries: 3
     contimeout: 20
     http-send-name-header: true
-    acl:
-      - name: rule2
-        condition: hdr_dom(host) -i static.{{ ansible_hostname }}
+    # acl:
+    #   - name: rule2
+    #     condition: hdr_dom(host) -i "static.{{ domain }}"
     servers:
       - name: web-01
         ip: 10.10.10.12
