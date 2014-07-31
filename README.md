@@ -47,17 +47,19 @@ Default vip: 10.10.10.10
 - - -
 
 ### Tools and components:
-* [Vagrant](http://vagrantup.com/)
+* [Vagrant](http://vagrantup.com/) 1.6+
  * excellent local provisioning
-* [Ansible](http://ansible.com/)
+* [Ansible](http://ansible.com/) 1.5+
  * highly flexible and simple config mgmt
  * simple redirection between varied environments
-* [Haproxy](http://haproxy.org/)
+* [Haproxy](http://haproxy.org/) 1.5.1
  * known to be highly scalable and often deployed in HA
-* [Nginx](http://nginx.org/)
+* [Nginx](http://nginx.org/) 1.4.6
  * known for excellent binary serving
-* [Jetty](http://eclipse.org/jetty/)
+* [Jetty](http://eclipse.org/jetty/) 6
  * known for simplicity and scalability
+* [Virtualbox](http://virtualbox.org/) 4.3+ or [VMWare Fusion](http://www.vmware.com/products/fusion) 6.04
+ * virtualization option
 
 ### Approach
 Of the components above, I have prior experience with all but Jetty though I have some prior recent experience with Tomcat - Jetty is commonly seen to be simpler and more performant. I've been looking to test it and this was a good opportunity. I tried in all cases to avoid any hard-coding in favour of dynamic inventory and variables, to allow for future scalability, simplified maintenance.
@@ -156,6 +158,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 ### Rolling update method:
 * Triggered by CI creation of new artifact (could be rollback)
 * CI hosts assets and artifact
+* deploy user is created to manage interaction with the server without root or vagrant
 
 ##### CI calls Ansible `rolling_update` playbook that runs within each web/app role serially:  
  1. Notify chat/new relic of deploy

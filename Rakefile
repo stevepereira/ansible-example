@@ -29,7 +29,7 @@ end
 notify = 'terminal-notifier -message SUCCESS || terminal-notifier -message FAILED'
 
 desc "Default task => install dependencies (:homebrew) and start (:vagrant)"
-task :default => ["setup:vagrant"]
+task :default => ["homebrew:install", "setup:vagrant"]
 
 namespace :homebrew do
   task :install => [:xcode_install, :brew_install, :brew_update, :install_ansible, :install_virtualbox, :install_vagrant, :install_terminal_notifier]
@@ -60,7 +60,7 @@ namespace :homebrew do
     puts "+++ Updating homebrew"
     sh "brew update"
     sh "tap phinze/homebrew-cask"
-    sh "brew update"    
+    sh "brew update"
   end
 
   desc "installs ansible"
@@ -92,7 +92,7 @@ namespace :homebrew do
     if not File.exists? "/Applications/Vagrant/bin/vagrant"
       puts "+++ Installing Vagrant"
       sh "brew cask install vagrant"
-      sh "brew switch vagrant #{vagrant_version}”
+      sh "brew switch vagrant #{vagrant_version}"
     else
       puts "*** Vagrant already installed, version:"
       sh "vagrant -v"
@@ -117,7 +117,6 @@ namespace :homebrew do
 end
 
 namespace :setup do
-  Rake::Task["homebrew:install"].invoke
   task :vagrant => [:vagrant_plugins, :vagrant_up, :vagrant_provision]
 
   desc "vagrant plugins"

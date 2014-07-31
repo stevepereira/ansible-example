@@ -89,8 +89,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |c|
     ansible.extra_vars = { clear_module_cache: true, ansible_ssh_user: 'vagrant' }
     ansible.raw_ssh_args = '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes'
     ansible.verbose = ''
-    #ansible.skip_tags = "non-local"
-    # ansible.tags = 'test'
+    ansible.skip_tags = 'ssl'
+    #ansible.tags = 'test'
     # ansible.start_at_task = ''
   end
 
