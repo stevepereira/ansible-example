@@ -158,7 +158,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 ### Rolling update method:
 * Triggered by CI creation of new artifact (could be rollback)
 * CI hosts assets and artifact
-* deploy user is created to manage interaction with the server without root or vagrant
+* 'deploy' user is created to manage interaction with the server without root or vagrant
 
 ##### CI calls Ansible `rolling_update` playbook that runs within each web/app role serially:  
  1. Notify chat/new relic of deploy
@@ -181,9 +181,9 @@ Of the components above, I have prior experience with all but Jetty though I hav
  1. Sends failure notification to chat/new relic/pagerduty/sns etc
 
 ### Haproxy recycle on changes:
- 1. trigger iptables SYN drop
- 1. wait for completion (port not listening)
- 1. keepalive triggers live haproxy to take over shared IP
- 1. restart haproxy
- 1. open iptables
+ 1. Trigger iptables SYN drop
+ 1. Wait for completion (port not listening)
+ 1. Keepalive triggers live haproxy to take over shared IP
+ 1. Restart haproxy
+ 1. Open iptables
 
