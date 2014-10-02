@@ -2,10 +2,10 @@
 # vi: set ft=ruby :
 
 # Set box configuration options
-box = 'puphpet/ubuntu1404-x64'
-memory = 512
+box = 'puppetlabs/ubuntu-14.04-64-nocm'
+memory = "512"
 gui = false
-cpus = 2
+cpus = "2"
 
 # default config uses a vip 10.10.10.10 that should be configured for all fqdns
 boxes = [
@@ -89,7 +89,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |c|
     ansible.extra_vars = { clear_module_cache: true, ansible_ssh_user: 'vagrant' }
     ansible.raw_ssh_args = '-o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o IdentitiesOnly=yes'
     ansible.verbose = ''
-    ansible.skip_tags = 'ssl'
+    ansible.skip_tags = 'test'
     #ansible.tags = 'test'
     # ansible.start_at_task = ''
   end
