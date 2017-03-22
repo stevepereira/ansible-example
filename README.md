@@ -48,18 +48,18 @@ Default vip: 10.10.10.10
 
 ### Tools and components:
 * [Vagrant](http://vagrantup.com/) 1.6+
- * excellent local provisioning
+  * excellent local provisioning
 * [Ansible](http://ansible.com/) 1.5+
- * highly flexible and simple config mgmt
- * simple redirection between varied environments
+  * highly flexible and simple config mgmt
+  * simple redirection between varied environments
 * [Haproxy](http://haproxy.org/) 1.5.1
- * known to be highly scalable and often deployed in HA
+  * known to be highly scalable and often deployed in HA
 * [Nginx](http://nginx.org/) 1.4.6
- * known for excellent binary serving
+  * known for excellent binary serving
 * [Jetty](http://eclipse.org/jetty/) 6
- * known for simplicity and scalability
+  * known for simplicity and scalability
 * [Virtualbox](http://virtualbox.org/) 4.3+ or [VMWare Fusion](http://www.vmware.com/products/fusion) 6.04
- * virtualization option
+  * virtualization option
 
 ### Approach
 Of the components above, I have prior experience with all but Jetty though I have some prior recent experience with Tomcat - Jetty is commonly seen to be simpler and more performant. I've been looking to test it and this was a good opportunity. I tried in all cases to avoid any hard-coding in favour of dynamic inventory and variables, to allow for future scalability, simplified maintenance.
@@ -74,48 +74,48 @@ Of the components above, I have prior experience with all but Jetty though I hav
 
 ### Challenges and proposals:
 * **Shared, scalable persistence for legacy datastore**
- * drbd/syncthing/btsync/s3Fuse
+  * drbd/syncthing/btsync/s3Fuse
 * **Vagrant/AWS/Jenkins context switch**
- * Variable machine count in dev
- * Ansible + multi-inventory options
- * Role separation
+  * Variable machine count in dev
+  * Ansible + multi-inventory options
+  * Role separation
 * **Proper security practice**
- * Common hardening and least-privilege
- * Standard tools like ufw, fail2ban, logwatch and clamav
- * Sensitive data located on secure host, within environment variables where possible
+  * Common hardening and least-privilege
+  * Standard tools like ufw, fail2ban, logwatch and clamav
+  * Sensitive data located on secure host, within environment variables where possible
 * **Reproducible configuration**
- * Ansible with common role architecture, dynamic roles and inventory
+  * Ansible with common role architecture, dynamic roles and inventory
 * **Scaling and dynamic inventory**
- * Consider Consul
- * ec2.py for ansible dynamic inventory
- * May need to change Ansible execution method to accelerated mode or local provisioning @ hundreds of hosts
+  * Consider Consul
+  * ec2.py for ansible dynamic inventory
+  * May need to change Ansible execution method to accelerated mode or local provisioning @ hundreds of hosts
 
 ### Principles:
 * **Effective separation of concerns by role**
- * Least-privilege - port restrictions and specialized user privileges
- * DRY
- * Single purpose roles
+  * Least-privilege - port restrictions and specialized user privileges
+  * DRY
+  * Single purpose roles
 * **Secure interaction**
- * Hardened machines
- * No password auth
- * Allow for CI-driven provisioning
+  * Hardened machines
+  * No password auth
+  * Allow for CI-driven provisioning
 * **Scalability**
- * Allow for app/web/lb scaling at varied rates
- * Allow for special-purpose machine configuration for each role
+  * Allow for app/web/lb scaling at varied rates
+  * Allow for special-purpose machine configuration for each role
 * **Dev and prod parity**
- * Consistent deployment, identical role separation
- * Deployment flexibility - multi or single-server provisioning
+  * Consistent deployment, identical role separation
+  * Deployment flexibility - multi or single-server provisioning
 * **Zero downtime**
- * Rolling updates
- * Redundant and HA architecture
- * Geographic distribution
+  * Rolling updates
+  * Redundant and HA architecture
+  * Geographic distribution
 * **Visibility and integration**
- * Event notification
- * ChatOps integration
- * Metric and log aggregation
+  * Event notification
+  * ChatOps integration
+  * Metric and log aggregation
 * **Agility**
- * Configuration, app, assets and environment all individually deployable
- * Ansible configured to run with restricted tags, specified roles or only tests if desired
+  * Configuration, app, assets and environment all individually deployable
+  * Ansible configured to run with restricted tags, specified roles or only tests if desired
 
 ### Future: 
 * Perfect forward secrecy [here](https://gist.github.com/rnewson/8384304)
@@ -123,9 +123,9 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * Elastic load balancing/route53 - secondary dns
 * Elastic IP remap - EC2 API Tools command ec2-associate-address
 * Resource-based deployment:
- * OpenShift Origin Cluster
- * Mesos + Consul + Docker
- * CoreOS + Fleetctl + etc.d + Docker
+  * OpenShift Origin Cluster
+  * Mesos + Consul + Docker
+  * CoreOS + Fleetctl + etc.d + Docker
 
 #### Nice to have:
 * P2P for legacy datastore persistence
@@ -140,7 +140,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 ###Scaling:
 * Packer to bake Ansible-provisioned AMI or Ansible and snapshot to enable autoscaling
 * Considered boot with fetch script for war file (cloud-init?) though that would require connection back to CI which is a security risk
- * Jenkins will push to all servers
+  * Jenkins will push to all servers
 
 - - -
 
@@ -153,7 +153,7 @@ Of the components above, I have prior experience with all but Jetty though I hav
 * On Vagrant, asset and artifact folders should be mounted from the host
 * Single subnet haproxy to allow keepalive
 * Route53 or ELB can be added in front to allow geo-distributed haproxy
- * Web and App servers can be geo-distributed for fault tolerance
+  * Web and App servers can be geo-distributed for fault tolerance
 
 ### Rolling update method:
 * Triggered by CI creation of new artifact (could be rollback)
